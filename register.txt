@@ -1,0 +1,91 @@
+package servlet;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+/**
+ * Servlet implementation class Register
+ */
+@WebServlet("/Register")
+public class Register extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public Register() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		  	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		PrintWriter out = response.getWriter();
+        String s1=request.getParameter("t1");
+        String s2=request.getParameter("t2");
+        String s3=request.getParameter("t3");
+        String b=request.getParameter("b1");
+        if(b.equals("ENTER")){
+        	try{
+            	 
+                 HttpSession session=request.getSession();
+                Class.forName("com.mysql.jdbc.Driver");  
+                 Connection con1= DriverManager.getConnection("jdbc:mysql://127.4.96.130:3306/interview","adminrTbSGI5","qNt86N8BW32V");  
+                 Statement stmt1 = con1.createStatement();
+                 ResultSet rs=stmt1.executeQuery("select * from score where roll='"+s1+"'");
+                 int c=0;
+                 if(rs.next())
+                 {
+                   c++;
+                 }
+                 if(c==1){
+                     session.setAttribute("user",session.getAttribute("name"));
+                     int a=Integer.parseInt(rs.getString("inv2"));
+                     if(a==0){
+                         int b1=stmt1.executeUpdate("update score set inv2="+s3+" where roll='"+s1+"'");
+
+                     }
+                     else{
+                         int b1=stmt1.executeUpdate("update score set inv3="+s3+" where roll='"+s1+"'");
+
+                     }
+
+                    RequestDispatcher rd = request.getRequestDispatcher("/score.jsp");
+                    rd.forward(request, response);
+                 }
+                 else{
+                     int b1=stmt1.executeUpdate("insert into score values('"+s1+"','"+s2+"',"+s3+",0,0)");
+                     session.setAttribute("user",session.getAttribute("name"));
+                	 response.sendRedirect("score.jsp");
+                 }
+                 
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+
+	}
+
+}
